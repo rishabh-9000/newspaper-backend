@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"newspaper-backend/config"
+	"newspaper-backend/routes"
 
 	"github.com/gorilla/mux"
 )
@@ -20,6 +21,10 @@ func main() {
 	router.HandleFunc(
 		"/",
 		Test).Methods("GET")
+
+	router.HandleFunc(
+		"/api/all-news",
+		routes.AllNews).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
