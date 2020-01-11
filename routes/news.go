@@ -19,6 +19,7 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	var allNews []models.News
+	var finalResponse models.FinalResponse
 
 	cursor, e := collection.Find(ctx, bson.M{})
 	if e != nil {
@@ -34,7 +35,10 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 		allNews = append(allNews, news)
 	}
 
-	json.NewEncoder(w).Encode(allNews)
+	finalResponse.Status = "success"
+	finalResponse.Body = allNews
+
+	json.NewEncoder(w).Encode(finalResponse)
 }
 
 // BusinessNews : Returns all business news
@@ -45,6 +49,7 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	var allBusinessNews []models.News
+	var finalResponse models.FinalResponse
 
 	cursor, e := collection.Find(ctx, models.News{Category: "business"})
 	if e != nil {
@@ -60,7 +65,10 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 		allBusinessNews = append(allBusinessNews, news)
 	}
 
-	json.NewEncoder(w).Encode(allBusinessNews)
+	finalResponse.Status = "success"
+	finalResponse.Body = allBusinessNews
+
+	json.NewEncoder(w).Encode(finalResponse)
 }
 
 // SportsNews : Returns all sports news
@@ -71,6 +79,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	var allSportsNews []models.News
+	var finalResponse models.FinalResponse
 
 	cursor, e := collection.Find(ctx, models.News{Category: "sports"})
 	if e != nil {
@@ -85,8 +94,11 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 		cursor.Decode(&news)
 		allSportsNews = append(allSportsNews, news)
 	}
+	
+	finalResponse.Status = "success"
+	finalResponse.Body = allSportsNews
 
-	json.NewEncoder(w).Encode(allSportsNews)
+	json.NewEncoder(w).Encode(finalResponse)
 }
 
 // EntertainmentNews : Returns all entertainment
@@ -97,6 +109,7 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	var allEntertainmentNews []models.News
+	var finalResponse models.FinalResponse
 
 	cursor, e := collection.Find(ctx, models.News{Category: "entertainment"})
 	if e != nil {
@@ -112,5 +125,8 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 		allEntertainmentNews = append(allEntertainmentNews, news)
 	}
 
-	json.NewEncoder(w).Encode(allEntertainmentNews)
+	finalResponse.Status = "success"
+	finalResponse.Body = allEntertainmentNews
+
+	json.NewEncoder(w).Encode(finalResponse)
 }
