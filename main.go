@@ -26,6 +26,18 @@ func main() {
 		"/api/all-news",
 		routes.AllNews).Methods("GET")
 
+	router.HandleFunc(
+		"/api/business-news",
+		routes.BusinessNews).Methods("GET")
+		
+	router.HandleFunc(
+		"/api/sports-news",
+		routes.SportsNews).Methods("GET")
+		
+	router.HandleFunc(
+		"/api/entertainment-news",
+		routes.EntertainmentNews).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
