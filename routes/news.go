@@ -101,7 +101,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(finalResponse)
 }
 
-// EntertainmentNews : Returns all entertainment
+// EntertainmentNews : Returns all entertainment news
 func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 

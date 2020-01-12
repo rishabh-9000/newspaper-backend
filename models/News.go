@@ -8,6 +8,7 @@ type News struct {
 	Host     string 			`json:"host,omitempty" bson:"host,omitempty"`
 	Category string 			`json:"category,omitempty" bson:"category,omitempty"`
 	Headline string 			`json:"headline,omitempty" bson:"headline,omitempty"`
+	Image 	 string				`json:"image,omitempty" bson:"image,omitempty"`
 	URL      string 			`json:"url,omitempty" bson:"url,omitempty"`
 	Date     string 			`json:"date,omitempty" bson:"date,omitempty"`
 }
