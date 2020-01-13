@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"context"
 	"net/http"
 	"encoding/json"
@@ -31,6 +32,7 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 
 	for cursor.Next(ctx) {
 		var news models.News
+		fmt.Println(cursor)
 		cursor.Decode(&news)
 		allNews = append(allNews, news)
 	}
