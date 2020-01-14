@@ -37,6 +37,10 @@ func main() {
 	router.HandleFunc(
 		"/api/entertainment-news",
 		routes.EntertainmentNews).Methods("GET")
+	
+	router.HandleFunc(
+		"/api/click-count/{news_id}",
+		routes.ClickCount).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
