@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // AllNews : Returns all news
@@ -186,8 +187,9 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 	var mostViewedNews []models.News
 	var finalResponse models.FinalResponse
 
-	cursor, e := collection.Find(ctx, bson.M{}).Sort("clickCount").All(&mostViewedNews)
-	log.Println(cursor)
+	opts := options.Find()
+	opts.SetSort(bson.D{{"clickCount", -1}})
+	cursor, e := collection.Find(ctx, bson.D{}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -198,7 +200,6 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 	for cursor.Next(ctx) {
 		var news models.News
 		cursor.Decode(&news)
-		// log.Println(news)
 		mostViewedNews = append(mostViewedNews, news)
 	}
 
