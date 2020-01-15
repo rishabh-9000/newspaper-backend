@@ -29,18 +29,22 @@ func main() {
 	router.HandleFunc(
 		"/api/business-news",
 		routes.BusinessNews).Methods("GET")
-		
+
 	router.HandleFunc(
 		"/api/sports-news",
 		routes.SportsNews).Methods("GET")
-		
+
 	router.HandleFunc(
 		"/api/entertainment-news",
 		routes.EntertainmentNews).Methods("GET")
-	
+
 	router.HandleFunc(
 		"/api/click-count/{news_id}",
 		routes.ClickCount).Methods("GET")
+
+	router.HandleFunc(
+		"/api/most-viewed-news",
+		routes.MostViewedNews).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 }

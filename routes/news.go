@@ -1,11 +1,10 @@
 package routes
 
 import (
-	"log"
-	"reflect"
 	"context"
-	"net/http"
 	"encoding/json"
+	"log"
+	"net/http"
 	"newspaper-backend/config"
 	"newspaper-backend/models"
 	"time"
@@ -103,7 +102,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 		cursor.Decode(&news)
 		allSportsNews = append(allSportsNews, news)
 	}
-	
+
 	finalResponse.Status = "success"
 	finalResponse.Body = allSportsNews
 
@@ -145,7 +144,6 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 
 // ClickCount : Increase the clickCount by 1
 func ClickCount(w http.ResponseWriter, r *http.Request) {
-	log.Println("HERE")
 	w.Header().Set("content-type", "application/json")
 
 	collection := config.Client.Database("newspaper").Collection("news")
@@ -162,7 +160,7 @@ func ClickCount(w http.ResponseWriter, r *http.Request) {
 
 	filter := bson.M{"_id": bson.M{"$eq": newsObjectID}}
 	update := bson.M{"$inc": bson.M{"clickCount": 1}}
-	result, e := collection.UpdateOne(ctx, filter, update,)
+	result, e := collection.UpdateOne(ctx, filter, update)
 	if e != nil {
 		log.Println(e)
 		return
@@ -172,6 +170,40 @@ func ClickCount(w http.ResponseWriter, r *http.Request) {
 
 	finalResponse.Status = "success"
 	finalResponse.Body = result
+
+	json.NewEncoder(w).Encode(finalResponse)
+	return
+}
+
+// MostViewedNews : Returns the news with most clickCount (Descending to Ascending)
+func MostViewedNews(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	collection := config.Client.Database("newspaper").Collection("news")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var mostViewedNews []models.News
+	var finalResponse models.FinalResponse
+
+	cursor, e := collection.Find(ctx, bson.M{}).Sort("clickCount").All(&mostViewedNews)
+	log.Println(cursor)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
+		return
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var news models.News
+		cursor.Decode(&news)
+		// log.Println(news)
+		mostViewedNews = append(mostViewedNews, news)
+	}
+
+	finalResponse.Status = "success"
+	finalResponse.Body = mostViewedNews
 
 	json.NewEncoder(w).Encode(finalResponse)
 	return
