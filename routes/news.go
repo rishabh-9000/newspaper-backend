@@ -15,6 +15,28 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// GetHosts : Returns all Host names
+func GetHosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	collection := config.Client.Database("newspaper").Collection("news")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var finalResponse models.FinalResponse
+
+	field, e := collection.Distinct(ctx, "host", bson.D{{}})
+	if e != nil {
+		log.Println(e.Error())
+		return
+	}
+
+	finalResponse.Status = "success"
+	finalResponse.Body = field
+
+	json.NewEncoder(w).Encode(finalResponse)
+}
+
 // AllNews : Returns all news
 func AllNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
