@@ -47,8 +47,8 @@ func main() {
 		routes.MostViewedNews).Methods("GET")
 
 	router.HandleFunc(
-	"/api/host-list",
-	routes.GetHosts).Methods("GET")
+		"/api/host-list",
+		routes.GetHosts).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
