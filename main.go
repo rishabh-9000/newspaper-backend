@@ -50,6 +50,10 @@ func main() {
 		"/api/host-list",
 		routes.GetHosts).Methods("GET")
 
+	router.HandleFunc(
+		"/api/send-otp",
+		routes.SendOTP).Methods("POST")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
