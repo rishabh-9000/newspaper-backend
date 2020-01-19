@@ -54,6 +54,14 @@ func main() {
 		"/api/send-otp",
 		routes.SendOTP).Methods("POST")
 
+	router.HandleFunc(
+		"/api/authenticate",
+		routes.Authenticate).Methods("POST")
+
+	router.HandleFunc(
+		"/api/get-user",
+		routes.GetUserEmail).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
