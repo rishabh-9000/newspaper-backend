@@ -1,35 +1,33 @@
 package routes
 
 import (
-	"log"
-	"time"
 	"context"
-	"net/http"
 	"encoding/json"
+	"log"
+	"net/http"
 	"newspaper-backend/config"
 	"newspaper-backend/helper"
 	"newspaper-backend/models"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// Email : To get email where OTP will be sent
 type Email struct {
 	Email string `json:"email" bson:"email"`
 }
 
+// OTP : Structure to store OTP in DB
 type OTP struct {
-	Email 	  string 	`json:"email" bson:"email"`
-	OTP   	  string 	`json:"otp" bson:"otp"`
+	Email     string    `json:"email" bson:"email"`
+	OTP       string    `json:"otp" bson:"otp"`
 	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 }
 
 // SendOTP : Sends OTP to User
 func SendOTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-
-	collecton := config.Client.Database("newspaper").Collection("otp")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
 	var email Email
 	var otpResponse OTP
@@ -56,11 +54,15 @@ func SendOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	collecton := config.Client.Database("newspaper").Collection("otp")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	otpResponse.Email = email.Email
 	otpResponse.OTP = otp
 	otpResponse.CreatedAt = time.Now()
 
-	_, e = collecton.InsertOne(ctx, otpResponse,)
+	_, e = collecton.InsertOne(ctx, otpResponse)
 	if e != nil {
 		log.Println("Failed to enter in DB: ", e.Error())
 		return
@@ -108,7 +110,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 // GetUserEmail : Decodes JWT to Email
 func GetUserEmail(w http.ResponseWriter, r *http.Request) {
-	var finalResponse models.FinalResponse	
+	var finalResponse models.FinalResponse
 
 	tokenString := r.Header["X-Auth-Token"][0]
 
