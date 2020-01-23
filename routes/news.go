@@ -261,6 +261,11 @@ func SaveNews(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	count, _ := collection.CountDocuments(ctx, bson.M{"email": payload.Email, "news": mongoID})
+	if count != 0 {
+		log.Println("News already Exists")
+		return
+	}
 	filter := bson.M{"email": payload.Email}
 	update := bson.M{"$push": bson.M{"news": mongoID}}
 	result, e := collection.UpdateOne(ctx, filter, update)
