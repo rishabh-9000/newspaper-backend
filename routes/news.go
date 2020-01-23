@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"newspaper-backend/config"
+	"newspaper-backend/helper"
 	"newspaper-backend/models"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 
 // SaveNewsPayload : Payload containing user's email and news' mongoID
 type SaveNewsPayload struct {
-	Email   string `json:"email" bson:"email"`
+	Token   string `json:"token" bson:"token"`
 	MongoID string `json:"mongoID" bson:"mongoID"`
 }
 
@@ -242,31 +243,35 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 func SaveNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json/")
 
-	var payload SaveNewsPayload
 	var finalResponse models.FinalResponse
 
-	e := json.NewDecoder(r.Body).Decode(&payload)
+	JWT := r.Header["X-Auth-Token"][0]
+	email, e := helper.DecodeJWT(JWT)
 	if e != nil {
-		log.Println(e.Error())
+		finalResponse.Status = "failed"
+		finalResponse.Body = "unauthorized"
+
+		json.NewEncoder(w).Encode(finalResponse)
 		return
 	}
 
-	mongoID, e := primitive.ObjectIDFromHex(payload.MongoID)
+	vars := mux.Vars(r)
+	mongoID, e := primitive.ObjectIDFromHex(vars["id"])
 	if e != nil {
-		log.Println(e.Error())
-		return
+		log.Fatal("MongoID not found")
 	}
 
 	collection := config.Client.Database("newspaper").Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	count, _ := collection.CountDocuments(ctx, bson.M{"email": payload.Email, "news": mongoID})
+	count, _ := collection.CountDocuments(
+		ctx, bson.M{"email": email, "news": mongoID})
 	if count != 0 {
 		log.Println("News already Exists")
 		return
 	}
-	filter := bson.M{"email": payload.Email}
+	filter := bson.M{"email": email}
 	update := bson.M{"$push": bson.M{"news": mongoID}}
 	result, e := collection.UpdateOne(ctx, filter, update)
 	if e != nil {

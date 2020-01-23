@@ -63,8 +63,8 @@ func main() {
 		routes.GetUserEmail).Methods("GET")
 
 	router.HandleFunc(
-		"/api/save-news",
-		routes.SaveNews).Methods("POST")
+		"/api/save-news/{id}",
+		routes.SaveNews).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
