@@ -216,7 +216,7 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 	var finalResponse models.FinalResponse
 
 	opts := options.Find()
-	opts.SetSort(bson.D{{"clickCount", -1}})
+	opts.SetSort(bson.D{{Key: "clickCount", Value: -1}})
 	cursor, e := collection.Find(ctx, bson.D{}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
