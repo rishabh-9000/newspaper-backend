@@ -78,11 +78,14 @@ func SendOTP(w http.ResponseWriter, r *http.Request) {
 func Authenticate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collecton := config.Client.Database("newspaper").Collection("otp")
+	otpCollecton := config.Client.Database("newspaper").Collection("otp")
+	profileCollection := config.Client.Database("newspaper").Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var otp OTP
+	var profile models.Profile
+	var profileExists models.Profile
 	var finalResponse models.FinalResponse
 
 	e := json.NewDecoder(r.Body).Decode(&otp)
@@ -94,13 +97,24 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	email := otp.Email
 	otpCode := otp.OTP
 
-	_, e = collecton.DeleteOne(ctx, bson.M{"email": email, "otp": otpCode})
+	profile.Email = email
+
+	_, e = otpCollecton.DeleteOne(ctx, bson.M{"email": email, "otp": otpCode})
 	if e != nil {
 		log.Println("Error in Removing: ", e.Error())
 		return
 	}
 
+	_ = profileCollection.FindOne(ctx, bson.M{"email": email}).Decode(&profileExists)
+	if profileExists.Email == "" {
+		_, e = profileCollection.InsertOne(ctx, profile)
+	}
+
 	jwtToken, e := helper.EncodeJWT(email)
+	if e != nil {
+		log.Println("JWT Encoding Failed")
+		return
+	}
 
 	finalResponse.Status = "success"
 	finalResponse.Body = jwtToken

@@ -15,6 +15,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// SaveNewsPayload : Payload containing user's email and news' mongoID
+type SaveNewsPayload struct {
+	Email   string `json:"email" bson:"email"`
+	MongoID string `json:"mongoID" bson:"mongoID"`
+}
+
 // GetHosts : Returns all Host names
 func GetHosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
@@ -230,4 +236,41 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(finalResponse)
 	return
+}
+
+// SaveNews : Save the news in user's profile
+func SaveNews(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json/")
+
+	var payload SaveNewsPayload
+	var finalResponse models.FinalResponse
+
+	e := json.NewDecoder(r.Body).Decode(&payload)
+	if e != nil {
+		log.Println(e.Error())
+		return
+	}
+
+	mongoID, e := primitive.ObjectIDFromHex(payload.MongoID)
+	if e != nil {
+		log.Println(e.Error())
+		return
+	}
+
+	collection := config.Client.Database("newspaper").Collection("profile")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"email": payload.Email}
+	update := bson.M{"$push": bson.M{"news": mongoID}}
+	result, e := collection.UpdateOne(ctx, filter, update)
+	if e != nil {
+		log.Println(e.Error())
+		return
+	}
+
+	finalResponse.Status = "success"
+	finalResponse.Body = result
+
+	json.NewEncoder(w).Encode(finalResponse)
 }
