@@ -284,3 +284,37 @@ func SaveNews(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(finalResponse)
 }
+
+// GetSavedNews : Get the profile of user to get list of saved news
+func GetSavedNews(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	var profile models.Profile
+	var finalResponse models.FinalResponse
+
+	JWT := r.Header["X-Auth-Token"][0]
+	email, e := helper.DecodeJWT(JWT)
+	if e != nil {
+		finalResponse.Status = "failed"
+		finalResponse.Body = "unauthorized"
+
+		json.NewEncoder(w).Encode(finalResponse)
+		return
+	}
+
+	collection := config.Client.Database("newspaper").Collection("profile")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	e = collection.FindOne(ctx, bson.M{"email": email}).Decode(&profile)
+	if e != nil {
+		log.Fatal("Failed to get data from Mongo")
+	}
+
+	// var newsList []string
+	for news := range profile.News {
+		log.Print(news)
+		// newsList = append(newsList, primitive.)
+	}
+	return
+}
