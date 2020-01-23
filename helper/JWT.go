@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"newspaper-backend/constants"
 	"log"
+	"newspaper-backend/constants"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
