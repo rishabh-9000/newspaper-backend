@@ -258,7 +258,8 @@ func SaveNews(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	mongoID, e := primitive.ObjectIDFromHex(vars["id"])
 	if e != nil {
-		log.Fatal("MongoID not found")
+		log.Println("MongoID not found")
+		return
 	}
 
 	collection := config.Client.Database("newspaper").Collection("profile")
@@ -306,15 +307,18 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	e = collection.FindOne(ctx, bson.M{"email": email}).Decode(&profile)
+	e = collection.FindOne(ctx, models.Profile{Email: email}).Decode(&profile)
 	if e != nil {
-		log.Fatal("Failed to get data from Mongo")
+		log.Println("Failed to get data from Mongo")
+		return
 	}
 
-	// var newsList []string
-	for news := range profile.News {
-		log.Print(news)
-		// newsList = append(newsList, primitive.)
+	var newsList []string
+	for _, value := range profile.News {
+		newsList = append(newsList, value.Hex())
 	}
-	return
+	finalResponse.Status = "success"
+	finalResponse.Body = newsList
+
+	json.NewEncoder(w).Encode(finalResponse)
 }
