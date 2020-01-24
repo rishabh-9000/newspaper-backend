@@ -322,3 +322,45 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(finalResponse)
 }
+
+// RemoveSavedNews : Removes the news from news array
+func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	collection := config.Client.Database("newspaper").Collection("profile")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var finalResponse models.FinalResponse
+
+	JWT := r.Header["X-Auth-Token"][0]
+	email, e := helper.DecodeJWT(JWT)
+	if e != nil {
+		log.Println("Unauthorized")
+		finalResponse.Status = "failed"
+		finalResponse.Body = "Unauthorized"
+
+		json.NewEncoder(w).Encode(finalResponse)
+		return
+	}
+
+	vars := mux.Vars(r)
+	mongoID, e := primitive.ObjectIDFromHex(vars["id"])
+	if e != nil {
+		log.Println("Failed to convert to ObjectID")
+		return
+	}
+
+	filter := bson.M{"email": email}
+	update := bson.M{"$pull": bson.M{"news": mongoID}}
+	result, e := collection.UpdateOne(ctx, filter, update)
+	if e != nil {
+		log.Println("Failed to Remove")
+		return
+	}
+
+	finalResponse.Status = "success"
+	finalResponse.Body = result
+
+	json.NewEncoder(w).Encode(finalResponse)
+}

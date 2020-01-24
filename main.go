@@ -70,6 +70,10 @@ func main() {
 		"/api/saved-news",
 		routes.GetSavedNews).Methods("GET")
 
+	router.HandleFunc(
+		"/api/remove-news/{id}",
+		routes.RemoveSavedNews).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
