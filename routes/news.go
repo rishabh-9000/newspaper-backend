@@ -351,6 +351,13 @@ func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	count, _ := collection.CountDocuments(
+		ctx, bson.M{"email": email, "news": mongoID})
+	if count == 0 {
+		log.Println("News Doesn't Exists")
+		return
+	}
+
 	filter := bson.M{"email": email}
 	update := bson.M{"$pull": bson.M{"news": mongoID}}
 	result, e := collection.UpdateOne(ctx, filter, update)
