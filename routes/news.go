@@ -8,6 +8,7 @@ import (
 	"newspaper-backend/config"
 	"newspaper-backend/helper"
 	"newspaper-backend/models"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -26,7 +27,7 @@ type SaveNewsPayload struct {
 func GetHosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -48,7 +49,7 @@ func GetHosts(w http.ResponseWriter, r *http.Request) {
 func AllNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -80,7 +81,7 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 func BusinessNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -112,7 +113,7 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 func SportsNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -144,7 +145,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -176,7 +177,7 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 func ClickCount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -209,7 +210,7 @@ func ClickCount(w http.ResponseWriter, r *http.Request) {
 func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("news")
+	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -262,7 +263,7 @@ func SaveNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := config.Client.Database("newspaper").Collection("profile")
+	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -303,7 +304,7 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := config.Client.Database("newspaper").Collection("profile")
+	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -327,7 +328,7 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("profile")
+	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
