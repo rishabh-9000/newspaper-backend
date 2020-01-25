@@ -74,6 +74,14 @@ func main() {
 		"/api/remove-news/{id}",
 		routes.RemoveSavedNews).Methods("GET")
 
+	router.HandleFunc(
+		"/api/user",
+		routes.GetUser).Methods("GET")
+
+	router.HandleFunc(
+		"/api/update-user",
+		routes.UpdateUser).Methods("POST")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
