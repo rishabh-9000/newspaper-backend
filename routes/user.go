@@ -8,6 +8,7 @@ import (
 	"newspaper-backend/config"
 	"newspaper-backend/helper"
 	"newspaper-backend/models"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,7 +23,7 @@ type userDetail struct {
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("profile")
+	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -57,7 +58,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	collection := config.Client.Database("newspaper").Collection("profile")
+	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

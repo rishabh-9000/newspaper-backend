@@ -82,6 +82,10 @@ func main() {
 		"/api/update-user",
 		routes.UpdateUser).Methods("POST")
 
+	router.HandleFunc(
+		"/api/get-saved-news-details",
+		routes.GetSavedNewsDetails).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 

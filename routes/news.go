@@ -308,7 +308,7 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	e = collection.FindOne(ctx, models.Profile{Email: email}).Decode(&profile)
+	e = collection.FindOne(ctx, bson.M{"email": email}).Decode(&profile)
 	if e != nil {
 		log.Println("Failed to get data from Mongo")
 		return
@@ -369,6 +369,60 @@ func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
 
 	finalResponse.Status = "success"
 	finalResponse.Body = result
+
+	json.NewEncoder(w).Encode(finalResponse)
+}
+
+// GetSavedNewsDetails : Get saved news in detail
+func GetSavedNewsDetails(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	profileCollection := config.Client.Database(os.Getenv("db")).Collection("profile")
+	newsCollection := config.Client.Database(os.Getenv("db")).Collection("news")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var finalResponse models.FinalResponse
+	var profile models.Profile
+	var newsList []models.News
+
+	JWT := r.Header["X-Auth-Token"][0]
+	email, e := helper.DecodeJWT(JWT)
+	if e != nil {
+		log.Println("Unauthorized")
+
+		finalResponse.Status = "failed"
+		finalResponse.Body = "unauthorized"
+
+		json.NewEncoder(w).Encode(finalResponse)
+		return
+	}
+
+	e = profileCollection.FindOne(ctx, bson.M{"email": email}).Decode(&profile)
+	if e != nil {
+		log.Println("No Record Found")
+		return
+	}
+
+	for _, value := range profile.News {
+		log.Println("Value:", value)
+	}
+
+	cursor, e := newsCollection.Find(ctx, bson.M{"_id": bson.M{"$in": profile.News}})
+	if e != nil {
+		log.Println("Did not find any ID")
+		return
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var news models.News
+		cursor.Decode(&news)
+		newsList = append(newsList, news)
+	}
+
+	finalResponse.Status = "success"
+	finalResponse.Body = newsList
 
 	json.NewEncoder(w).Encode(finalResponse)
 }
