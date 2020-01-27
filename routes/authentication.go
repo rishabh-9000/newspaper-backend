@@ -19,19 +19,12 @@ type Email struct {
 	Email string `json:"email" bson:"email"`
 }
 
-// OTP : Structure to store OTP in DB
-type OTP struct {
-	Email     string    `json:"email" bson:"email"`
-	OTP       string    `json:"otp" bson:"otp"`
-	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
-}
-
 // SendOTP : Sends OTP to User
 func SendOTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	var email Email
-	var otpResponse OTP
+	var otpResponse models.OTP
 	var finalResponse models.FinalResponse
 
 	e := json.NewDecoder(r.Body).Decode(&email)
@@ -84,7 +77,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var otp OTP
+	var otp models.OTP
 	var profile models.Profile
 	var profileExists models.Profile
 	var finalResponse models.FinalResponse
