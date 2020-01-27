@@ -56,7 +56,9 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 	var allNews []models.News
 	var finalResponse models.FinalResponse
 
-	cursor, e := collection.Find(ctx, bson.M{})
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	cursor, e := collection.Find(ctx, bson.M{}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -88,7 +90,9 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 	var allBusinessNews []models.News
 	var finalResponse models.FinalResponse
 
-	cursor, e := collection.Find(ctx, models.News{Category: "business"})
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	cursor, e := collection.Find(ctx, models.News{Category: "business"}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -120,7 +124,9 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 	var allSportsNews []models.News
 	var finalResponse models.FinalResponse
 
-	cursor, e := collection.Find(ctx, models.News{Category: "sports"})
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	cursor, e := collection.Find(ctx, models.News{Category: "sports"}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -152,7 +158,9 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 	var allEntertainmentNews []models.News
 	var finalResponse models.FinalResponse
 
-	cursor, e := collection.Find(ctx, models.News{Category: "entertainment"})
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	cursor, e := collection.Find(ctx, models.News{Category: "entertainment"}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
