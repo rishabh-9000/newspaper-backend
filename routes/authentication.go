@@ -22,6 +22,7 @@ type Email struct {
 // SendOTP : Sends OTP to User
 func SendOTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var email Email
 	var otpResponse models.OTP
@@ -71,6 +72,7 @@ func SendOTP(w http.ResponseWriter, r *http.Request) {
 // Authenticate : Takes Email and OTP and authenticate
 func Authenticate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	otpCollecton := config.Client.Database(os.Getenv("db")).Collection("otp")
 	profileCollection := config.Client.Database(os.Getenv("db")).Collection("profile")
@@ -118,6 +120,9 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 // GetUserEmail : Decodes JWT to Email
 func GetUserEmail(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	var finalResponse models.FinalResponse
 
 	tokenString := r.Header["X-Auth-Token"][0]

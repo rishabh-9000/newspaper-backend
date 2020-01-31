@@ -26,6 +26,7 @@ type SaveNewsPayload struct {
 // GetHosts : Returns all Host names
 func GetHosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -48,6 +49,7 @@ func GetHosts(w http.ResponseWriter, r *http.Request) {
 // AllNews : Returns all news
 func AllNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -58,7 +60,7 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	cursor, e := collection.Find(ctx, bson.M{}, opts)
+	cursor, e := collection.Find(ctx, bson.M{"archived": false}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -82,6 +84,7 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 // BusinessNews : Returns all business news
 func BusinessNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -92,7 +95,7 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	cursor, e := collection.Find(ctx, models.News{Category: "business"}, opts)
+	cursor, e := collection.Find(ctx, models.News{Category: "business", Archived: false}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -116,6 +119,7 @@ func BusinessNews(w http.ResponseWriter, r *http.Request) {
 // SportsNews : Returns all sports news
 func SportsNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -126,7 +130,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	cursor, e := collection.Find(ctx, models.News{Category: "sports"}, opts)
+	cursor, e := collection.Find(ctx, models.News{Category: "sports", Archived: false}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -150,6 +154,7 @@ func SportsNews(w http.ResponseWriter, r *http.Request) {
 // EntertainmentNews : Returns all entertainment news
 func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -160,7 +165,7 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	cursor, e := collection.Find(ctx, models.News{Category: "entertainment"}, opts)
+	cursor, e := collection.Find(ctx, models.News{Category: "entertainment", Archived: false}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -184,6 +189,7 @@ func EntertainmentNews(w http.ResponseWriter, r *http.Request) {
 // ClickCount : Increase the clickCount by 1
 func ClickCount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -217,6 +223,7 @@ func ClickCount(w http.ResponseWriter, r *http.Request) {
 // MostViewedNews : Returns the news with most clickCount (Descending to Ascending)
 func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -227,7 +234,7 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "clickCount", Value: -1}})
-	cursor, e := collection.Find(ctx, bson.D{}, opts)
+	cursor, e := collection.Find(ctx, bson.M{"archived": false}, opts)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
@@ -251,6 +258,7 @@ func MostViewedNews(w http.ResponseWriter, r *http.Request) {
 // SaveNews : Save the news in user's profile
 func SaveNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json/")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var finalResponse models.FinalResponse
 
@@ -298,6 +306,7 @@ func SaveNews(w http.ResponseWriter, r *http.Request) {
 // GetSavedNews : Get the profile of user to get list of saved news
 func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var profile models.Profile
 	var finalResponse models.FinalResponse
@@ -335,6 +344,7 @@ func GetSavedNews(w http.ResponseWriter, r *http.Request) {
 // RemoveSavedNews : Removes the news from news array
 func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -384,6 +394,7 @@ func RemoveSavedNews(w http.ResponseWriter, r *http.Request) {
 // GetSavedNewsDetails : Get saved news in detail
 func GetSavedNewsDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	profileCollection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	newsCollection := config.Client.Database(os.Getenv("db")).Collection("news")

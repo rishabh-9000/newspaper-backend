@@ -22,6 +22,7 @@ type userDetail struct {
 // GetUser : Gets user data
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -57,6 +58,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // UpdateUser : Update user detail
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	collection := config.Client.Database(os.Getenv("db")).Collection("profile")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

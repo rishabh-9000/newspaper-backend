@@ -86,6 +86,8 @@ func main() {
 		"/api/get-saved-news-details",
 		routes.GetSavedNewsDetails).Methods("GET")
 
+	router.Use(mux.CORSMethodMiddleware(router))
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
