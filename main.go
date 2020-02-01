@@ -8,6 +8,7 @@ import (
 	"newspaper-backend/routes"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
 )
 
 func main() {
@@ -86,9 +87,11 @@ func main() {
 		"/api/get-saved-news-details",
 		routes.GetSavedNewsDetails).Methods("GET")
 
-	router.Use(mux.CORSMethodMiddleware(router))
+	headers := handlers.AllowedHeaders([]string{"X-Auth-Token", "Content-Type"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST"})
+	origins := handlers.AllowedOrigins([]string{"*"})
 
-	log.Fatal(http.ListenAndServe(":5000", router))
+	log.Fatal(http.ListenAndServe(":5000", handlers.CORS(headers, methods, origins)(router)))
 }
 
 // Test : Test Route
