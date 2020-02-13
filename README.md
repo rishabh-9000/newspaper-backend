@@ -4,6 +4,7 @@ This repository only contains the backend API of the Newspaper Website.
 For frontend and news crawler refer to below repositories.
 Frontend - https://github.com/rishabh-9000/newspaper-frontend
 Crawler - https://github.com/rishabh-9000/news_crawler
+Live IP - http://35.154.105.119/
 
 ## Prerequisite
 
