@@ -7,8 +7,8 @@ import (
 	"newspaper-backend/config"
 	"newspaper-backend/routes"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 		Test).Methods("GET")
 
 	router.HandleFunc(
-		"/api/all-news/{news_id}",
+		"/api/all-news",
 		routes.AllNews).Methods("GET")
 
 	router.HandleFunc(

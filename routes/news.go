@@ -14,9 +14,14 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+// SaveNewsPayload : Payload containing user's email and news' mongoID
+type SaveNewsPayload struct {
+	Token   string `json:"token" bson:"token"`
+	MongoID string `json:"mongoID" bson:"mongoID"`
+}
 
 // GetHosts : Returns all Host names
 func GetHosts(w http.ResponseWriter, r *http.Request) {
@@ -52,55 +57,21 @@ func AllNews(w http.ResponseWriter, r *http.Request) {
 
 	var allNews []models.News
 	var finalResponse models.FinalResponse
-	var cursor *mongo.Cursor
-	var newsID string
-
-	vars := mux.Vars(r)
-	newsID = vars["news_id"]
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-	opts.SetLimit(50)
+	cursor, e := collection.Find(ctx, bson.M{"archived": false}, opts)
+	if e != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
+		return
+	}
+	defer cursor.Close(ctx)
 
-	if newsID != "none" {
-		newsObjectID, e := primitive.ObjectIDFromHex(newsID)
-		if e != nil {
-			log.Println(e)
-			return
-		}
-		cursor, e = collection.Find(
-			ctx,
-			bson.M{
-				"_id": bson.M{
-					"$lt": newsObjectID},
-				"archived": false},
-			opts)
-		if e != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
-			return
-		}
-		defer cursor.Close(ctx)
-
-		for cursor.Next(ctx) {
-			var news models.News
-			cursor.Decode(&news)
-			allNews = append(allNews, news)
-		}
-	} else {
-		cursor, e := collection.Find(ctx, bson.M{"archived": false}, opts)
-		if e != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
-			return
-		}
-		defer cursor.Close(ctx)
-
-		for cursor.Next(ctx) {
-			var news models.News
-			cursor.Decode(&news)
-			allNews = append(allNews, news)
-		}
+	for cursor.Next(ctx) {
+		var news models.News
+		cursor.Decode(&news)
+		allNews = append(allNews, news)
 	}
 
 	finalResponse.Status = "success"
@@ -474,23 +445,3 @@ func GetSavedNewsDetails(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(finalResponse)
 }
-
-// func Filter(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("content-type", "application/json")
-// 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-// 	collection := config.Client.Database(os.Getenv("db")).Collection("news")
-// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-// 	defer cancel()
-
-// 	opts := options.Find()
-// 	opts.SetLimit(50)
-// 	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
-// 	cursor, e := collection.Find(ctx, bson.M{"archived": false}, opts)
-// 	if e != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write([]byte(`{ "message": "` + e.Error() + `" }`))
-// 		return
-// 	}
-// 	defer cursor.Close(ctx)
-// }
